@@ -13,13 +13,13 @@
 
 using namespace std;
 
-#define SCREEN_W 1360
+#define SCREEN_W 1305
 #define SCREEN_H 768
 
-#define CARD_W 223
 #define CARD_H 236
+#define CARD_W 200
 
-#define CARD_GAP 20
+#define CARD_GAP 15
 
 struct Pos
 {
