@@ -119,6 +119,11 @@ void create_cardboard()
 
 }
 
+void on_click(Sint32 x, Sint32 y)
+{
+    printf("%d, %d\n", x, y);
+}
+
 int main()
 {
 
@@ -148,8 +153,11 @@ int main()
                 while (SDL_PollEvent(&event)) {
 			        switch (event.type) {
 				        case SDL_QUIT:
-					    alive = 0;
-					    break;
+					        alive = 0;
+					        break;
+                        case SDL_MOUSEBUTTONDOWN:
+                            on_click(event.motion.x, event.motion.y);
+				            break;
 			        }
 		        }
 
