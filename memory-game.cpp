@@ -29,7 +29,7 @@ struct Pos
 class Card
 {
     public:
-        
+        int id;
 };
 
 class CardSection
@@ -119,9 +119,30 @@ void create_cardboard()
 
 }
 
+void on_select(Card *card)
+{
+
+}
+
 void on_click(Sint32 x, Sint32 y)
 {
-    printf("%d, %d\n", x, y);
+
+    int i, j;
+
+    for(i = 0; i < 3; i++){
+        for(j = 0; j < 6; j++){
+            
+            if(x >= cardboard[i][j].position.x && x <= cardboard[i][j].position.x + CARD_W &&
+                y >= cardboard[i][j].position.y && y <= cardboard[i][j].position.y + CARD_H){
+                printf("%d, %d\n", i, j);    
+                on_select(&cardboard[i][j].card);
+                return;
+            }
+
+        }
+
+    }
+
 }
 
 int main()
