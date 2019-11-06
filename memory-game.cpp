@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <random>
 #include <iostream>
 #include <chrono>
+#include <time.h> 
 
 using namespace std;
 
@@ -32,6 +32,12 @@ class Card
         int id;
 };
 
+struct AppearTimes
+{
+    Card card;
+    int times;
+};
+
 class CardSection
 {
     public:
@@ -45,6 +51,16 @@ SDL_Renderer *renderer;
 int alive = 1;
 
 CardSection cardboard[3][6];
+Card cards[10];
+
+void load_assets()
+{
+
+    int i;
+    for(i = 0; i < 10; i++)
+        cards[i].id = i;
+
+}
 
 void render()
 {
@@ -80,6 +96,7 @@ void renderer_p()
 	double elapsed;
 
     while(alive){
+        
         tbegin = chrono::high_resolution_clock::now();
 
         render();
@@ -89,6 +106,7 @@ void renderer_p()
 			chrono::duration<double> elapsed_ = chrono::duration_cast<chrono::duration<double>>(tend - tbegin);
 			elapsed = elapsed_.count();
 		} while (elapsed < 0.01);
+
     }
 
 }
@@ -119,9 +137,43 @@ void create_cardboard()
 
 }
 
-void on_select(Card *card)
+void randomize_cards()
 {
 
+    bool dpass = false;
+    int i, j, count, id;
+    AppearTimes apt[10];
+
+    for(i = 0; i < 10; i++){
+        apt[i].card = cards[i];
+        apt[i].times = 2;
+    }
+
+    srand (time(NULL));
+
+    for(i = 0; i < 3; i++){
+        for(j = 0; j < 6; j++){
+            
+            do{
+                id = (rand() % 9) + 1;
+                if(apt[id].times > 0){
+                    apt[id].times--;
+                    cardboard[i][j].card = apt[id].card;
+                    dpass = false;
+                }else{
+                    dpass = true;
+                }
+
+            }while(dpass);
+
+        }
+    }
+    
+}
+
+void on_select(Card *card)
+{
+    printf("%d\n", card->id);
 }
 
 void on_click(Sint32 x, Sint32 y)
@@ -133,8 +185,7 @@ void on_click(Sint32 x, Sint32 y)
         for(j = 0; j < 6; j++){
             
             if(x >= cardboard[i][j].position.x && x <= cardboard[i][j].position.x + CARD_W &&
-                y >= cardboard[i][j].position.y && y <= cardboard[i][j].position.y + CARD_H){
-                printf("%d, %d\n", i, j);    
+                y >= cardboard[i][j].position.y && y <= cardboard[i][j].position.y + CARD_H){  
                 on_select(&cardboard[i][j].card);
                 return;
             }
@@ -159,7 +210,9 @@ int main()
 
     renderer = SDL_CreateRenderer(screen, -1, 0);
 
+    load_assets();
     create_cardboard();
+    randomize_cards();
 
     #pragma omp parallel
     {
