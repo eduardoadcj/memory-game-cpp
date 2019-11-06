@@ -149,7 +149,7 @@ void randomize_cards()
         apt[i].times = 2;
     }
 
-    srand (time(NULL));
+    srand(time(NULL));
 
     for(i = 0; i < 3; i++){
         for(j = 0; j < 6; j++){
