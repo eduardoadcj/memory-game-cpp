@@ -10,6 +10,7 @@
 #include <iostream>
 #include <chrono>
 #include <time.h> 
+#include <unistd.h>
 
 using namespace std;
 
@@ -21,6 +22,10 @@ using namespace std;
 
 #define CARD_GAP 15
 
+#define STATUS_DOWN -1
+#define STATUS_UP 1
+#define STATUS_DONE 0
+
 struct Pos
 {
     double x, y;
@@ -30,6 +35,7 @@ class Card
 {
     public:
         int id;
+        int status;
 };
 
 struct AppearTimes
@@ -53,12 +59,16 @@ int alive = 1;
 CardSection cardboard[3][6];
 Card cards[10];
 
+CardSection *selected_card;
+
 void load_assets()
 {
 
     int i;
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 10; i++){
         cards[i].id = i;
+        cards[i].status = STATUS_DOWN;
+    }
 
 }
 
@@ -74,13 +84,25 @@ void render()
     for(i = 0; i < 3; i++){
         for(j = 0; j < 6; j++){
             
+            Card *card = &cardboard[i][j].card;
             rect.x = cardboard[i][j].position.x;
             rect.y = cardboard[i][j].position.y;
             rect.w = CARD_W;
             rect.h = CARD_H;
+            
+            if(card->status != STATUS_DONE){
 
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		    SDL_RenderFillRect(renderer, &rect);
+                switch(card->status){
+                    case STATUS_DOWN:
+                        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        break;
+                    case STATUS_UP:
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                        break;
+                }
+                SDL_RenderFillRect(renderer, &rect);
+
+            }
 
         }
     }
@@ -171,9 +193,41 @@ void randomize_cards()
     
 }
 
-void on_select(Card *card)
+void on_select(CardSection *card_section)
 {
+    
+    Card *card = &card_section->card;
+
+    if(card_section->card.status == STATUS_DONE)
+        return;
+
     printf("%d\n", card->id);
+
+    if(selected_card == NULL){
+        card->status = STATUS_UP;
+        selected_card = card_section;
+    }else{
+
+        if(selected_card->position.x == card_section->position.x &&
+            selected_card->position.y == card_section->position.y)
+            return;
+
+        card->status = STATUS_UP;
+
+        usleep(400000);
+
+        if(selected_card->card.id == card->id){
+            selected_card->card.status = STATUS_DONE;
+            card->status = STATUS_DONE;
+            selected_card = NULL;
+        }else {
+            selected_card->card.status = STATUS_DOWN;
+            card->status = STATUS_DOWN;
+            selected_card = NULL;   
+        }
+
+    }
+
 }
 
 void on_click(Sint32 x, Sint32 y)
@@ -186,7 +240,7 @@ void on_click(Sint32 x, Sint32 y)
             
             if(x >= cardboard[i][j].position.x && x <= cardboard[i][j].position.x + CARD_W &&
                 y >= cardboard[i][j].position.y && y <= cardboard[i][j].position.y + CARD_H){  
-                on_select(&cardboard[i][j].card);
+                on_select(&cardboard[i][j]);
                 return;
             }
 
@@ -209,6 +263,8 @@ int main()
 		SDL_WINDOW_OPENGL);
 
     renderer = SDL_CreateRenderer(screen, -1, 0);
+
+    selected_card = NULL;
 
     load_assets();
     create_cardboard();
