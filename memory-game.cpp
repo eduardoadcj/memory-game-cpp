@@ -19,7 +19,6 @@ using namespace std;
 
 #define CARD_W 200
 #define CARD_H 236
-
 #define CARD_GAP 15
 
 #define STATUS_DONE 0
