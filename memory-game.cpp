@@ -17,14 +17,14 @@ using namespace std;
 #define SCREEN_W 1305
 #define SCREEN_H 768
 
-#define CARD_H 236
 #define CARD_W 200
+#define CARD_H 236
 
 #define CARD_GAP 15
 
+#define STATUS_DONE 0
 #define STATUS_DOWN -1
 #define STATUS_UP 1
-#define STATUS_DONE 0
 
 struct Pos
 {
