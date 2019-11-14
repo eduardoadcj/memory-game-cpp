@@ -72,6 +72,15 @@ void load_assets()
     }
 
     cards[0].surface = IMG_Load("img/back.png");
+    cards[1].surface = IMG_Load("img/card_1.png");
+    cards[2].surface = IMG_Load("img/card_2.png");
+    cards[3].surface = IMG_Load("img/card_3.png");
+    cards[4].surface = IMG_Load("img/card_4.png");
+    cards[5].surface = IMG_Load("img/card_5.png");
+    cards[6].surface = IMG_Load("img/card_6.png");
+    cards[7].surface = IMG_Load("img/card_7.png");
+    cards[8].surface = IMG_Load("img/card_8.png");
+    cards[9].surface = IMG_Load("img/card_9.png");
 
 }
 
@@ -87,6 +96,8 @@ void render()
     for(i = 0; i < 3; i++){
         for(j = 0; j < 6; j++){
             
+            SDL_Texture *texture;
+
             Card *card = &cardboard[i][j].card;
             rect.x = cardboard[i][j].position.x;
             rect.y = cardboard[i][j].position.y;
@@ -95,20 +106,17 @@ void render()
             
             if(card->status != STATUS_DONE){
                 
-                SDL_Texture *texture;
-
-                switch(card->status){
-                    case STATUS_DOWN:
-                        texture = SDL_CreateTextureFromSurface(renderer, cards[0].surface);
-                        SDL_RenderCopy(renderer, texture, NULL, &rect);
-                        break;
-                    case STATUS_UP:
-                        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-                        SDL_RenderFillRect(renderer, &rect);
-                        break;
+                if(card->status == STATUS_DOWN){
+                    texture = SDL_CreateTextureFromSurface(renderer, cards[0].surface);
+                }else{
+                    texture = SDL_CreateTextureFromSurface(renderer, card->surface);
                 }
 
+                SDL_RenderCopy(renderer, texture, NULL, &rect);
+            
             }
+
+            SDL_DestroyTexture(texture);
 
         }
     }
