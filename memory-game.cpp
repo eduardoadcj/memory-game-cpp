@@ -56,6 +56,7 @@ SDL_Window *screen;
 SDL_Renderer *renderer;
 
 int alive = 1;
+int points = 0;
 
 CardSection cardboard[3][6];
 Card cards[10];
@@ -215,8 +216,6 @@ void on_select(CardSection *card_section)
     if(card_section->card.status == STATUS_DONE)
         return;
 
-    printf("%d\n", card->id);
-
     if(selected_card == NULL){
         card->status = STATUS_UP;
         selected_card = card_section;
@@ -234,6 +233,7 @@ void on_select(CardSection *card_section)
             selected_card->card.status = STATUS_DONE;
             card->status = STATUS_DONE;
             selected_card = NULL;
+            points++;
         }else {
             selected_card->card.status = STATUS_DOWN;
             card->status = STATUS_DOWN;
@@ -294,6 +294,11 @@ int main()
             renderer_p();
 
             while(alive){
+
+                if(points == 9){
+                    randomize_cards();
+                    points = 0;
+                }
 
                 while (SDL_PollEvent(&event)) {
 			        switch (event.type) {
