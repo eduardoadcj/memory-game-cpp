@@ -11,6 +11,7 @@
 #include <chrono>
 #include <time.h> 
 #include <unistd.h>
+#include <SDL_image.h>
 
 using namespace std;
 
@@ -35,6 +36,7 @@ class Card
     public:
         int id;
         int status;
+        SDL_Surface *surface;
 };
 
 struct AppearTimes
@@ -69,6 +71,8 @@ void load_assets()
         cards[i].status = STATUS_DOWN;
     }
 
+    cards[0].surface = IMG_Load("img/back.png");
+
 }
 
 void render()
@@ -90,16 +94,19 @@ void render()
             rect.h = CARD_H;
             
             if(card->status != STATUS_DONE){
+                
+                SDL_Texture *texture;
 
                 switch(card->status){
                     case STATUS_DOWN:
-                        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        texture = SDL_CreateTextureFromSurface(renderer, cards[0].surface);
+                        SDL_RenderCopy(renderer, texture, NULL, &rect);
                         break;
                     case STATUS_UP:
                         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                        SDL_RenderFillRect(renderer, &rect);
                         break;
                 }
-                SDL_RenderFillRect(renderer, &rect);
 
             }
 
@@ -254,6 +261,7 @@ int main()
 
     SDL_Event event;
     SDL_Init(SDL_INIT_EVERYTHING);
+    IMG_Init(IMG_INIT_PNG);
 
     screen = SDL_CreateWindow("Memory Game CPP",
 		SDL_WINDOWPOS_UNDEFINED,
@@ -295,6 +303,7 @@ int main()
         }
     }
 
+    IMG_Quit();
     SDL_Quit();
 	return 0;
 
